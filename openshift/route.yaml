@@ -1,0 +1,17 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: github-pr-hoover
+  labels:
+    app: github-pr-hoover
+spec:
+  to:
+    kind: Service
+    name: github-pr-hoover
+    weight: 100
+  port:
+    targetPort: http
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect
+  wildcardPolicy: None

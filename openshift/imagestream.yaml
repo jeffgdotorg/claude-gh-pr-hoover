@@ -1,0 +1,9 @@
+apiVersion: image.openshift.io/v1
+kind: ImageStream
+metadata:
+  name: github-pr-hoover
+  labels:
+    app: github-pr-hoover
+spec:
+  lookupPolicy:
+    local: false

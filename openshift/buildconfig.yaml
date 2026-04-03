@@ -1,0 +1,24 @@
+apiVersion: build.openshift.io/v1
+kind: BuildConfig
+metadata:
+  name: github-pr-hoover
+  labels:
+    app: github-pr-hoover
+spec:
+  output:
+    to:
+      kind: ImageStreamTag
+      name: github-pr-hoover:latest
+  source:
+    type: Git
+    git:
+      uri: https://github.com/your-org/github-pr-hoover.git
+      ref: main
+    contextDir: .
+  strategy:
+    type: Docker
+    dockerStrategy:
+      dockerfilePath: Dockerfile
+  triggers:
+  - type: ConfigChange
+  - type: ImageChange
