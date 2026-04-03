@@ -63,7 +63,7 @@ def _validate_and_fetch_prs():
         }), 500)
 
 
-@app.route('/api/v1/prs', methods=['GET'])
+@app.route('/api/v1/merged-prs', methods=['GET'])
 def get_merged_prs():
     """
     Retrieve merged pull requests for a given repository and time period.
@@ -117,7 +117,7 @@ def get_merged_prs():
         }), 500
 
 
-@app.route('/api/v1/prs/count', methods=['GET'])
+@app.route('/api/v1/merged-prs/count', methods=['GET'])
 def get_prs_count():
     """
     Get the count of merged pull requests for a given repository and time period.
@@ -148,7 +148,7 @@ def get_prs_count():
         return Response(str(count), mimetype='text/plain'), 200
 
 
-@app.route('/api/v1/prs/<org>/<repo>/<int:pr_id>/reviewers', methods=['GET'])
+@app.route('/api/v1/merged-prs/<org>/<repo>/<int:pr_id>/reviewers', methods=['GET'])
 def get_pr_reviewers(org, repo, pr_id):
     """
     Retrieve reviewers for a specific pull request.

@@ -20,7 +20,7 @@ A Python 3 microservice for retrieving merged pull requests from GitHub reposito
 
 ### List Merged Pull Requests
 
-`GET /api/v1/prs`
+`GET /api/v1/merged-prs`
 
 #### Query Parameters
 
@@ -60,7 +60,7 @@ Returns a list where each element is an object with a single key (the PR identif
 
 ### Get PR Reviewers
 
-`GET /api/v1/prs/{orgName}/{repoName}/{prId}/reviewers`
+`GET /api/v1/merged-prs/{orgName}/{repoName}/{prId}/reviewers`
 
 Retrieve reviewers for a specific pull request.
 
@@ -82,11 +82,11 @@ Retrieve reviewers for a specific pull request.
 
 ### Get PR Count
 
-`GET /api/v1/prs/count`
+`GET /api/v1/merged-prs/count`
 
 Get the count of merged pull requests matching the query criteria.
 
-**Query Parameters:** Same as `/api/v1/prs`
+**Query Parameters:** Same as `/api/v1/merged-prs`
 
 **Accept Header:** `text/plain` (default), `application/json`, or `application/x-yaml`. CSV is not supported.
 
@@ -99,36 +99,36 @@ Get the count of merged pull requests matching the query criteria.
 
 **Get PR Count - Text (default):**
 ```bash
-curl "http://localhost:8080/api/v1/prs/count?org=kubernetes&repo=kubernetes&branch=main&start_time=1640995200&end_time=1643673600"
+curl "http://localhost:8080/api/v1/merged-prs/count?org=kubernetes&repo=kubernetes&branch=main&start_time=1640995200&end_time=1643673600"
 ```
 
 **Get PR Count - JSON:**
 ```bash
 curl -H "Accept: application/json" \
-  "http://localhost:8080/api/v1/prs/count?org=kubernetes&repo=kubernetes&branch=main&start_time=1640995200&end_time=1643673600"
+  "http://localhost:8080/api/v1/merged-prs/count?org=kubernetes&repo=kubernetes&branch=main&start_time=1640995200&end_time=1643673600"
 ```
 
 **List PRs - JSON Format (default):**
 ```bash
 curl -H "Accept: application/json" \
-  "http://localhost:8080/api/v1/prs?org=kubernetes&repo=kubernetes&branch=main&start_time=1640995200&end_time=1643673600"
+  "http://localhost:8080/api/v1/merged-prs?org=kubernetes&repo=kubernetes&branch=main&start_time=1640995200&end_time=1643673600"
 ```
 
 **List PRs - YAML Format:**
 ```bash
 curl -H "Accept: application/x-yaml" \
-  "http://localhost:8080/api/v1/prs?org=kubernetes&repo=kubernetes&branch=main&start_time=1640995200&end_time=1643673600"
+  "http://localhost:8080/api/v1/merged-prs?org=kubernetes&repo=kubernetes&branch=main&start_time=1640995200&end_time=1643673600"
 ```
 
 **List PRs - CSV Format:**
 ```bash
 curl -H "Accept: text/csv" \
-  "http://localhost:8080/api/v1/prs?org=kubernetes&repo=kubernetes&branch=main&start_time=1640995200&end_time=1643673600"
+  "http://localhost:8080/api/v1/merged-prs?org=kubernetes&repo=kubernetes&branch=main&start_time=1640995200&end_time=1643673600"
 ```
 
 **Get PR Reviewers:**
 ```bash
-curl "http://localhost:8080/api/v1/prs/kubernetes/kubernetes/12345/reviewers"
+curl "http://localhost:8080/api/v1/merged-prs/kubernetes/kubernetes/12345/reviewers"
 ```
 
 ## Local Development
