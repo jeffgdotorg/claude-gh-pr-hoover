@@ -2,7 +2,7 @@
 
 import os
 import requests
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import List, Dict, Optional
 
 
@@ -42,8 +42,8 @@ class GitHubService:
         Returns:
             Dictionary with PR identifiers as keys and PR data as values
         """
-        start_dt = datetime.fromtimestamp(start_time).isoformat()
-        end_dt = datetime.fromtimestamp(end_time).isoformat()
+        start_dt = datetime.fromtimestamp(start_time, tz=timezone.utc).isoformat()
+        end_dt = datetime.fromtimestamp(end_time, tz=timezone.utc).isoformat()
 
         # Fetch all merged PRs to the specified branch
         prs = self._fetch_all_merged_prs(org, repo, branch, start_dt, end_dt)
