@@ -1,0 +1,25 @@
+[run]
+# Coverage configuration
+source = .
+omit =
+    */venv/*
+    */tests/*
+    test_*.py
+    setup.py
+    */site-packages/*
+
+[report]
+# Reporting configuration
+precision = 2
+show_missing = True
+skip_covered = False
+
+exclude_lines =
+    # Standard exclusions
+    pragma: no cover
+    def __repr__
+    raise AssertionError
+    raise NotImplementedError
+    if __name__ == .__main__.:
+    if TYPE_CHECKING:
+    @abstractmethod
