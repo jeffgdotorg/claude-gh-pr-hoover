@@ -16,7 +16,7 @@ BRANCH="master"
 
 # Time range: Last 30 days from now
 END_TIME=$(date +%s)
-START_TIME=$((END_TIME - 2592000))  # 30 days in seconds
+START_TIME=$((END_TIME - 86400*14))  # 14 days in seconds
 
 # Map format to Accept header
 case "${FORMAT}" in
