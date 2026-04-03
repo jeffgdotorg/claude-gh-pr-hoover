@@ -19,6 +19,50 @@ def health_check():
     return jsonify({'status': 'healthy'}), 200
 
 
+def _validate_and_fetch_prs():
+    """Shared helper to validate params and fetch PRs. Returns (pr_data, error_response)."""
+    # Validate required parameters
+    required_params = ['org', 'repo', 'branch', 'start_time', 'end_time']
+    missing_params = [p for p in required_params if p not in request.args]
+
+    if missing_params:
+        return None, (jsonify({
+            'error': 'Missing required parameters',
+            'missing': missing_params
+        }), 400)
+
+    # Extract parameters
+    org = request.args.get('org')
+    repo = request.args.get('repo')
+    branch = request.args.get('branch')
+
+    # Validate and parse timestamps
+    try:
+        start_time = int(request.args.get('start_time'))
+        end_time = int(request.args.get('end_time'))
+    except ValueError:
+        return None, (jsonify({
+            'error': 'Invalid timestamp format',
+            'detail': 'start_time and end_time must be Unix epoch integers'
+        }), 400)
+
+    if start_time >= end_time:
+        return None, (jsonify({
+            'error': 'Invalid time range',
+            'detail': 'start_time must be less than end_time'
+        }), 400)
+
+    # Fetch merged PRs
+    try:
+        pr_data = github_service.get_merged_prs(org, repo, branch, start_time, end_time)
+        return pr_data, None
+    except Exception as e:
+        return None, (jsonify({
+            'error': 'Failed to fetch PRs from GitHub',
+            'detail': str(e)
+        }), 500)
+
+
 @app.route('/api/v1/prs', methods=['GET'])
 def get_merged_prs():
     """
@@ -37,36 +81,9 @@ def get_merged_prs():
     Returns:
         Merged PR data in the requested format
     """
-    # Validate required parameters
-    required_params = ['org', 'repo', 'branch', 'start_time', 'end_time']
-    missing_params = [p for p in required_params if p not in request.args]
-
-    if missing_params:
-        return jsonify({
-            'error': 'Missing required parameters',
-            'missing': missing_params
-        }), 400
-
-    # Extract parameters
-    org = request.args.get('org')
-    repo = request.args.get('repo')
-    branch = request.args.get('branch')
-
-    # Validate and parse timestamps
-    try:
-        start_time = int(request.args.get('start_time'))
-        end_time = int(request.args.get('end_time'))
-    except ValueError:
-        return jsonify({
-            'error': 'Invalid timestamp format',
-            'detail': 'start_time and end_time must be Unix epoch integers'
-        }), 400
-
-    if start_time >= end_time:
-        return jsonify({
-            'error': 'Invalid time range',
-            'detail': 'start_time must be less than end_time'
-        }), 400
+    pr_data, error = _validate_and_fetch_prs()
+    if error:
+        return error
 
     # Determine output format from Accept header
     accept_header = request.headers.get('Accept', 'application/json')
@@ -83,15 +100,6 @@ def get_merged_prs():
         output_format = 'json'
         mimetype = 'application/json'
 
-    # Fetch merged PRs
-    try:
-        pr_data = github_service.get_merged_prs(org, repo, branch, start_time, end_time)
-    except Exception as e:
-        return jsonify({
-            'error': 'Failed to fetch PRs from GitHub',
-            'detail': str(e)
-        }), 500
-
     # Format response based on requested format
     try:
         if output_format == 'json':
@@ -107,6 +115,37 @@ def get_merged_prs():
             'error': 'Failed to format response',
             'detail': str(e)
         }), 500
+
+
+@app.route('/api/v1/prs/count', methods=['GET'])
+def get_prs_count():
+    """
+    Get the count of merged pull requests for a given repository and time period.
+
+    Query Parameters: Same as /api/v1/prs
+    Headers: Accept - 'text/plain' (default), 'application/json', or 'application/x-yaml'. CSV not supported.
+    """
+    pr_data, error = _validate_and_fetch_prs()
+    if error:
+        return error
+
+    count = len(pr_data)
+    accept_header = request.headers.get('Accept', 'text/plain')
+
+    # Reject CSV
+    if 'text/csv' in accept_header:
+        return jsonify({
+            'error': 'Unsupported format',
+            'detail': 'CSV output is not supported for count endpoint'
+        }), 400
+
+    # Format response
+    if 'application/x-yaml' in accept_header or 'text/yaml' in accept_header:
+        return Response(formatter.to_yaml({'count': count}), mimetype='application/x-yaml'), 200
+    elif 'application/json' in accept_header:
+        return jsonify({'count': count}), 200
+    else:
+        return Response(str(count), mimetype='text/plain'), 200
 
 
 @app.route('/api/v1/prs/<org>/<repo>/<int:pr_id>/reviewers', methods=['GET'])

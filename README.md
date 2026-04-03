@@ -80,7 +80,33 @@ Retrieve reviewers for a specific pull request.
 }
 ```
 
+### Get PR Count
+
+`GET /api/v1/prs/count`
+
+Get the count of merged pull requests matching the query criteria.
+
+**Query Parameters:** Same as `/api/v1/prs`
+
+**Accept Header:** `text/plain` (default), `application/json`, or `application/x-yaml`. CSV is not supported.
+
+**Response Examples:**
+- Text: `42`
+- JSON: `{"count": 42}`
+- YAML: `count: 42`
+
 ### Example Requests
+
+**Get PR Count - Text (default):**
+```bash
+curl "http://localhost:8080/api/v1/prs/count?org=kubernetes&repo=kubernetes&branch=main&start_time=1640995200&end_time=1643673600"
+```
+
+**Get PR Count - JSON:**
+```bash
+curl -H "Accept: application/json" \
+  "http://localhost:8080/api/v1/prs/count?org=kubernetes&repo=kubernetes&branch=main&start_time=1640995200&end_time=1643673600"
+```
 
 **List PRs - JSON Format (default):**
 ```bash

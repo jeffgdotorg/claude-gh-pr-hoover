@@ -78,6 +78,12 @@ oc get route github-pr-hoover -o jsonpath='{.spec.host}'
 - Query params: org, repo, branch, start_time, end_time
 - Returns PR metadata WITHOUT reviewers (performance optimization)
 
+**GET /api/v1/prs/count** - Get PR count
+- Same query params as /api/v1/prs
+- Supports: text/plain (default), application/json, application/x-yaml
+- Rejects CSV with 400 error
+- Returns count only, reuses validation/fetch logic
+
 **GET /api/v1/prs/{org}/{repo}/{prId}/reviewers** - Get PR reviewers
 - Lazy-loaded reviewer information
 - Returns: `{"reviewers": ["user1", "user2"]}`
