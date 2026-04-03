@@ -31,7 +31,12 @@ A Python 3 microservice for retrieving merged pull requests from GitHub reposito
 | `branch` | string | Yes | Branch name to filter PRs merged into |
 | `start_time` | integer | Yes | Start time as Unix epoch timestamp |
 | `end_time` | integer | Yes | End time as Unix epoch timestamp |
-| `format` | string | No | Output format: `json`, `yaml`, or `csv` (default: `json`) |
+
+### Request Headers
+
+| Header | Type | Required | Description |
+|--------|------|----------|-------------|
+| `Accept` | string | No | Content type: `application/json`, `application/x-yaml`, or `text/csv` (default: `application/json`) |
 
 ### Response Format
 
@@ -58,17 +63,20 @@ The value is an associative array with the following fields:
 
 **JSON Format (default):**
 ```bash
-curl "http://localhost:8080/api/v1/prs?org=kubernetes&repo=kubernetes&branch=main&start_time=1640995200&end_time=1643673600"
+curl -H "Accept: application/json" \
+  "http://localhost:8080/api/v1/prs?org=kubernetes&repo=kubernetes&branch=main&start_time=1640995200&end_time=1643673600"
 ```
 
 **YAML Format:**
 ```bash
-curl "http://localhost:8080/api/v1/prs?org=kubernetes&repo=kubernetes&branch=main&start_time=1640995200&end_time=1643673600&format=yaml"
+curl -H "Accept: application/x-yaml" \
+  "http://localhost:8080/api/v1/prs?org=kubernetes&repo=kubernetes&branch=main&start_time=1640995200&end_time=1643673600"
 ```
 
 **CSV Format:**
 ```bash
-curl "http://localhost:8080/api/v1/prs?org=kubernetes&repo=kubernetes&branch=main&start_time=1640995200&end_time=1643673600&format=csv"
+curl -H "Accept: text/csv" \
+  "http://localhost:8080/api/v1/prs?org=kubernetes&repo=kubernetes&branch=main&start_time=1640995200&end_time=1643673600"
 ```
 
 ## Local Development

@@ -10,13 +10,27 @@ HOST="${API_HOST:-localhost:8080}"
 FORMAT="${1:-json}"
 
 # Example parameters - adjust these for your use case
-ORG="jeffgdotorg"
-REPO="claude-gh-pr-hoover"
-BRANCH="main"
+ORG="RedHatInsights"
+REPO="landing-page-frontend"
+BRANCH="master"
 
 # Time range: Last 30 days from now
 END_TIME=$(date +%s)
 START_TIME=$((END_TIME - 2592000))  # 30 days in seconds
+
+# Map format to Accept header
+case "${FORMAT}" in
+    yaml)
+        ACCEPT_HEADER="application/x-yaml"
+        ;;
+    csv)
+        ACCEPT_HEADER="text/csv"
+        ;;
+    *)
+        ACCEPT_HEADER="application/json"
+        FORMAT="json"
+        ;;
+esac
 
 echo "Fetching merged PRs from ${ORG}/${REPO} on branch ${BRANCH}"
 echo "Time range: $(date -r ${START_TIME}) to $(date -r ${END_TIME})"
@@ -24,6 +38,6 @@ echo "Format: ${FORMAT}"
 echo ""
 
 # Make the request
-curl -s "http://${HOST}/api/v1/prs?org=${ORG}&repo=${REPO}&branch=${BRANCH}&start_time=${START_TIME}&end_time=${END_TIME}&format=${FORMAT}"
+curl -s -H "Accept: ${ACCEPT_HEADER}" "http://${HOST}/api/v1/prs?org=${ORG}&repo=${REPO}&branch=${BRANCH}&start_time=${START_TIME}&end_time=${END_TIME}"
 
 echo ""

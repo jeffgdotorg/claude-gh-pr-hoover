@@ -29,7 +29,9 @@ def get_merged_prs():
         branch (str): Branch name to filter PRs merged into
         start_time (int): Start time as Unix epoch timestamp
         end_time (int): End time as Unix epoch timestamp
-        format (str): Output format - 'json', 'yaml', or 'csv' (default: 'json')
+
+    Headers:
+        Accept (str): Content type - 'application/json', 'application/x-yaml', or 'text/csv' (default: 'application/json')
 
     Returns:
         Merged PR data in the requested format
@@ -48,7 +50,6 @@ def get_merged_prs():
     org = request.args.get('org')
     repo = request.args.get('repo')
     branch = request.args.get('branch')
-    output_format = request.args.get('format', 'json').lower()
 
     # Validate and parse timestamps
     try:
@@ -66,13 +67,20 @@ def get_merged_prs():
             'detail': 'start_time must be less than end_time'
         }), 400
 
-    # Validate format
-    valid_formats = ['json', 'yaml', 'csv']
-    if output_format not in valid_formats:
-        return jsonify({
-            'error': 'Invalid format',
-            'detail': f'Format must be one of: {", ".join(valid_formats)}'
-        }), 400
+    # Determine output format from Accept header
+    accept_header = request.headers.get('Accept', 'application/json')
+
+    # Map Accept header to output format
+    if 'application/x-yaml' in accept_header or 'text/yaml' in accept_header:
+        output_format = 'yaml'
+        mimetype = 'application/x-yaml'
+    elif 'text/csv' in accept_header:
+        output_format = 'csv'
+        mimetype = 'text/csv'
+    else:
+        # Default to JSON for application/json, */* or any other value
+        output_format = 'json'
+        mimetype = 'application/json'
 
     # Fetch merged PRs
     try:
@@ -89,10 +97,10 @@ def get_merged_prs():
             return jsonify(pr_data), 200
         elif output_format == 'yaml':
             yaml_output = formatter.to_yaml(pr_data)
-            return Response(yaml_output, mimetype='application/x-yaml'), 200
+            return Response(yaml_output, mimetype=mimetype), 200
         elif output_format == 'csv':
             csv_output = formatter.to_csv(pr_data)
-            return Response(csv_output, mimetype='text/csv'), 200
+            return Response(csv_output, mimetype=mimetype), 200
     except Exception as e:
         return jsonify({
             'error': 'Failed to format response',
