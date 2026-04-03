@@ -28,7 +28,7 @@ class GitHubService:
         branch: str,
         start_time: int,
         end_time: int
-    ) -> Dict[str, Dict]:
+    ) -> List[Dict]:
         """
         Retrieve merged pull requests for a given repository and time period.
 
@@ -40,7 +40,7 @@ class GitHubService:
             end_time: End time as Unix epoch timestamp
 
         Returns:
-            Dictionary with PR identifiers as keys and PR data as values
+            List of PR data objects
         """
         start_dt = datetime.fromtimestamp(start_time, tz=timezone.utc).isoformat()
         end_dt = datetime.fromtimestamp(end_time, tz=timezone.utc).isoformat()
@@ -49,10 +49,10 @@ class GitHubService:
         prs = self._fetch_all_merged_prs(org, repo, branch, start_dt, end_dt)
 
         # Format results according to specification
-        results = {}
+        results = []
         for pr in prs:
             pr_id = pr['number']
-            pr_key = f"{org}/{repo}#{pr_id}"
+            pr_identifier = f"{org}/{repo}#{pr_id}"
 
             # Get reviewers for this PR
             reviewers = self._get_pr_reviewers(org, repo, pr_id)
@@ -61,16 +61,19 @@ class GitHubService:
             created_at = int(datetime.fromisoformat(pr['created_at'].replace('Z', '+00:00')).timestamp())
             merged_at = int(datetime.fromisoformat(pr['merged_at'].replace('Z', '+00:00')).timestamp())
 
-            results[pr_key] = {
-                'orgName': org,
-                'repoName': repo,
-                'prId': pr_id,
-                'creator': pr['user']['login'],
-                'mergedBy': pr['merged_by']['login'] if pr.get('merged_by') else None,
-                'createdAt': created_at,
-                'mergedAt': merged_at,
-                'reviewers': reviewers
-            }
+            # Each list element is a single-key object with the PR identifier as key
+            results.append({
+                pr_identifier: {
+                    'orgName': org,
+                    'repoName': repo,
+                    'prId': pr_id,
+                    'creator': pr['user']['login'],
+                    'mergedBy': pr['merged_by']['login'] if pr.get('merged_by') else None,
+                    'createdAt': created_at,
+                    'mergedAt': merged_at,
+                    'reviewers': reviewers
+                }
+            })
 
         return results
 

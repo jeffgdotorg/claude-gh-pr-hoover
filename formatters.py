@@ -4,36 +4,36 @@ import json
 import csv
 import yaml
 from io import StringIO
-from typing import Dict
+from typing import List, Dict
 
 
 class DataFormatter:
     """Utility class for formatting PR data into various formats."""
 
     @staticmethod
-    def to_json(data: Dict[str, Dict]) -> str:
+    def to_json(data: List[Dict]) -> str:
         """Convert PR data to JSON format."""
         return json.dumps(data, indent=2)
 
     @staticmethod
-    def to_yaml(data: Dict[str, Dict]) -> str:
+    def to_yaml(data: List[Dict]) -> str:
         """Convert PR data to YAML format."""
         return yaml.dump(data, default_flow_style=False, sort_keys=False)
 
     @staticmethod
-    def to_csv(data: Dict[str, Dict]) -> str:
+    def to_csv(data: List[Dict]) -> str:
         """
         Convert PR data to CSV format.
 
         CSV format will have columns:
-        pr_identifier, orgName, repoName, prId, creator, mergedBy, createdAt, mergedAt, reviewers
+        prIdentifier, orgName, repoName, prId, creator, mergedBy, createdAt, mergedAt, reviewers
         """
         if not data:
             return ""
 
         output = StringIO()
         fieldnames = [
-            'pr_identifier',
+            'prIdentifier',
             'orgName',
             'repoName',
             'prId',
@@ -47,9 +47,14 @@ class DataFormatter:
         writer = csv.DictWriter(output, fieldnames=fieldnames)
         writer.writeheader()
 
-        for pr_key, pr_data in data.items():
+        # Each item in data is a single-key dict with PR identifier as key
+        for pr_item in data:
+            # Get the single key (PR identifier) and its value (PR data)
+            pr_identifier = list(pr_item.keys())[0]
+            pr_data = pr_item[pr_identifier]
+
             row = {
-                'pr_identifier': pr_key,
+                'prIdentifier': pr_identifier,
                 'orgName': pr_data['orgName'],
                 'repoName': pr_data['repoName'],
                 'prId': pr_data['prId'],

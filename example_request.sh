@@ -16,7 +16,7 @@ BRANCH="master"
 
 # Time range: Last 30 days from now
 END_TIME=$(date +%s)
-START_TIME=$((END_TIME - 86400*14))  # 14 days in seconds
+START_TIME=$((END_TIME - 86400*30))  # 14 days in seconds
 
 # Map format to Accept header
 case "${FORMAT}" in
@@ -32,10 +32,10 @@ case "${FORMAT}" in
         ;;
 esac
 
-echo "Fetching merged PRs from ${ORG}/${REPO} on branch ${BRANCH}"
-echo "Time range: $(date -r ${START_TIME}) to $(date -r ${END_TIME})"
-echo "Format: ${FORMAT}"
-echo ""
+echo "Fetching merged PRs from ${ORG}/${REPO} on branch ${BRANCH}" >&2
+echo "Time range: $(date -r ${START_TIME}) to $(date -r ${END_TIME})" >&2
+echo "Format: ${FORMAT}" >&2
+echo "" >&2
 
 # Make the request
 curl -s -H "Accept: ${ACCEPT_HEADER}" "http://${HOST}/api/v1/prs?org=${ORG}&repo=${REPO}&branch=${BRANCH}&start_time=${START_TIME}&end_time=${END_TIME}"

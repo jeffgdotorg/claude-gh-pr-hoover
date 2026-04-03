@@ -79,8 +79,9 @@ oc get route github-pr-hoover -o jsonpath='{.spec.host}'
 - Supported: `application/json` (default), `application/x-yaml`, `text/csv`
 
 **Response Format:**
-- PR identifier keys: `orgName/repoName#prId`
-- Values contain: orgName, repoName, prId, creator, mergedBy, createdAt, mergedAt, reviewers
+- Returns a list where each element is a single-key object
+- Key format: `orgName/repoName#prId`
+- Value contains: orgName, repoName, prId, creator, mergedBy, createdAt, mergedAt, reviewers
 
 ### Critical Implementation Details
 

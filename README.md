@@ -40,23 +40,23 @@ A Python 3 microservice for retrieving merged pull requests from GitHub reposito
 
 ### Response Format
 
-Each PR is identified by a string key in the format: `orgName/repoName#prId`
-
-The value is an associative array with the following fields:
+Returns a list where each element is an object with a single key (the PR identifier in format `orgName/repoName#prId`) containing the PR details:
 
 ```json
-{
-  "orgName/repoName#123": {
-    "orgName": "example-org",
-    "repoName": "example-repo",
-    "prId": 123,
-    "creator": "github-username",
-    "mergedBy": "github-username",
-    "createdAt": 1234567890,
-    "mergedAt": 1234567900,
-    "reviewers": ["reviewer1", "reviewer2"]
+[
+  {
+    "example-org/example-repo#123": {
+      "orgName": "example-org",
+      "repoName": "example-repo",
+      "prId": 123,
+      "creator": "github-username",
+      "mergedBy": "github-username",
+      "createdAt": 1234567890,
+      "mergedAt": 1234567900,
+      "reviewers": ["reviewer1", "reviewer2"]
+    }
   }
-}
+]
 ```
 
 ### Example Requests
