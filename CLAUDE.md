@@ -13,6 +13,9 @@ A Flask microservice that retrieves merged GitHub pull requests and returns them
 # Install dependencies
 pip install -r requirements.txt
 
+# Install dev dependencies (includes pytest, coverage)
+pip install -r requirements-dev.txt
+
 # Set up environment
 cp .env.example .env
 # Edit .env and add GITHUB_TOKEN
@@ -24,6 +27,21 @@ python app.py
 ./example_request.sh          # JSON (default)
 ./example_request.sh yaml     # YAML
 ./example_request.sh csv      # CSV
+```
+
+### Testing
+```bash
+# Run all tests
+pytest
+
+# Run with coverage
+pytest --cov=. --cov-report=term-missing
+
+# Run specific test class
+pytest test_app.py::TestMergedPRsEndpoint -v
+
+# Generate HTML coverage report
+pytest --cov=. --cov-report=html
 ```
 
 ### Docker

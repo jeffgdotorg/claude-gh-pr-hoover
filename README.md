@@ -170,6 +170,47 @@ The service will be available at `http://localhost:8080`
 curl http://localhost:8080/health
 ```
 
+### Running Tests
+
+**Quick Start:**
+```bash
+# Run all tests (auto-installs dependencies)
+./run_tests.sh
+
+# Run with coverage report
+./run_tests.sh --coverage
+
+# Verbose output
+./run_tests.sh --verbose
+
+# Fast mode (minimal output)
+./run_tests.sh --fast
+```
+
+**Manual Testing:**
+```bash
+# Install development dependencies
+pip install -r requirements-dev.txt
+
+# Run all tests
+pytest
+
+# Run with coverage report
+pytest --cov=. --cov-report=term-missing
+
+# Run specific test file
+pytest test_app.py
+
+# Run specific test class
+pytest test_app.py::TestMergedPRsEndpoint
+
+# Generate HTML coverage report
+pytest --cov=. --cov-report=html
+# Open htmlcov/index.html in browser
+```
+
+See [TESTING.md](TESTING.md) for comprehensive testing documentation.
+
 ## OpenShift 4 Deployment
 
 ### Prerequisites
