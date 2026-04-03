@@ -54,9 +54,6 @@ class GitHubService:
             pr_id = pr['number']
             pr_identifier = f"{org}/{repo}#{pr_id}"
 
-            # Get reviewers for this PR
-            reviewers = self._get_pr_reviewers(org, repo, pr_id)
-
             # Parse timestamps
             created_at = int(datetime.fromisoformat(pr['created_at'].replace('Z', '+00:00')).timestamp())
             merged_at = int(datetime.fromisoformat(pr['merged_at'].replace('Z', '+00:00')).timestamp())
@@ -70,8 +67,7 @@ class GitHubService:
                     'creator': pr['user']['login'],
                     'mergedBy': pr['merged_by']['login'] if pr.get('merged_by') else None,
                     'createdAt': created_at,
-                    'mergedAt': merged_at,
-                    'reviewers': reviewers
+                    'mergedAt': merged_at
                 }
             })
 
@@ -125,7 +121,7 @@ class GitHubService:
 
         return all_prs
 
-    def _get_pr_reviewers(self, org: str, repo: str, pr_number: int) -> List[str]:
+    def get_pr_reviewers(self, org: str, repo: str, pr_number: int) -> List[str]:
         """Get list of reviewer usernames for a PR."""
         url = f"{self.base_url}/repos/{org}/{repo}/pulls/{pr_number}/reviews"
 

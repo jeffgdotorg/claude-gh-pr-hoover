@@ -18,11 +18,11 @@ A Python 3 microservice for retrieving merged pull requests from GitHub reposito
 
 ## API Specification
 
-### Endpoint
+### List Merged Pull Requests
 
 `GET /api/v1/prs`
 
-### Query Parameters
+#### Query Parameters
 
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
@@ -32,13 +32,13 @@ A Python 3 microservice for retrieving merged pull requests from GitHub reposito
 | `start_time` | integer | Yes | Start time as Unix epoch timestamp |
 | `end_time` | integer | Yes | End time as Unix epoch timestamp |
 
-### Request Headers
+#### Request Headers
 
 | Header | Type | Required | Description |
 |--------|------|----------|-------------|
 | `Accept` | string | No | Content type: `application/json`, `application/x-yaml`, or `text/csv` (default: `application/json`) |
 
-### Response Format
+#### Response Format
 
 Returns a list where each element is an object with a single key (the PR identifier in format `orgName/repoName#prId`) containing the PR details:
 
@@ -52,31 +52,57 @@ Returns a list where each element is an object with a single key (the PR identif
       "creator": "github-username",
       "mergedBy": "github-username",
       "createdAt": 1234567890,
-      "mergedAt": 1234567900,
-      "reviewers": ["reviewer1", "reviewer2"]
+      "mergedAt": 1234567900
     }
   }
 ]
 ```
 
+### Get PR Reviewers
+
+`GET /api/v1/prs/{orgName}/{repoName}/{prId}/reviewers`
+
+Retrieve reviewers for a specific pull request.
+
+#### Path Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `orgName` | string | Yes | GitHub organization name |
+| `repoName` | string | Yes | Repository name |
+| `prId` | integer | Yes | Pull request number |
+
+#### Response Format
+
+```json
+{
+  "reviewers": ["reviewer1", "reviewer2"]
+}
+```
+
 ### Example Requests
 
-**JSON Format (default):**
+**List PRs - JSON Format (default):**
 ```bash
 curl -H "Accept: application/json" \
   "http://localhost:8080/api/v1/prs?org=kubernetes&repo=kubernetes&branch=main&start_time=1640995200&end_time=1643673600"
 ```
 
-**YAML Format:**
+**List PRs - YAML Format:**
 ```bash
 curl -H "Accept: application/x-yaml" \
   "http://localhost:8080/api/v1/prs?org=kubernetes&repo=kubernetes&branch=main&start_time=1640995200&end_time=1643673600"
 ```
 
-**CSV Format:**
+**List PRs - CSV Format:**
 ```bash
 curl -H "Accept: text/csv" \
   "http://localhost:8080/api/v1/prs?org=kubernetes&repo=kubernetes&branch=main&start_time=1640995200&end_time=1643673600"
+```
+
+**Get PR Reviewers:**
+```bash
+curl "http://localhost:8080/api/v1/prs/kubernetes/kubernetes/12345/reviewers"
 ```
 
 ## Local Development

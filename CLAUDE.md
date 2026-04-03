@@ -58,18 +58,29 @@ oc get route github-pr-hoover -o jsonpath='{.spec.host}'
    - Request validation and parameter parsing
    - Content negotiation via Accept header (application/json, application/x-yaml, text/csv)
    - Error handling and response formatting
+   - Two endpoints: list PRs and get reviewers
 
 2. **github_service.py** - GitHub API integration layer
    - Wraps GitHub REST API v3
    - Handles authentication with personal access tokens
    - Implements pagination for PR queries
-   - Fetches PR metadata and review information
+   - Fetches PR metadata and review information (separate methods)
 
 3. **formatters.py** - Data transformation layer
    - Converts PR data to JSON, YAML, or CSV
    - Manages output format specifics
 
 4. **config.py** - Configuration (currently defined but not used by app.py)
+
+### API Endpoints
+
+**GET /api/v1/prs** - List merged PRs
+- Query params: org, repo, branch, start_time, end_time
+- Returns PR metadata WITHOUT reviewers (performance optimization)
+
+**GET /api/v1/prs/{org}/{repo}/{prId}/reviewers** - Get PR reviewers
+- Lazy-loaded reviewer information
+- Returns: `{"reviewers": ["user1", "user2"]}`
 
 ### API Design Patterns
 
@@ -78,10 +89,15 @@ oc get route github-pr-hoover -o jsonpath='{.spec.host}'
 - NEVER use query parameters like `?format=json`
 - Supported: `application/json` (default), `application/x-yaml`, `text/csv`
 
-**Response Format:**
+**Response Format (List PRs):**
 - Returns a list where each element is a single-key object
 - Key format: `orgName/repoName#prId`
-- Value contains: orgName, repoName, prId, creator, mergedBy, createdAt, mergedAt, reviewers
+- Value contains: orgName, repoName, prId, creator, mergedBy, createdAt, mergedAt
+
+**Performance Pattern:**
+- Reviewers separated to avoid N+1 query problem
+- Main endpoint makes ~2-3 API calls regardless of PR count
+- Reviewer endpoint makes 1 API call per PR (call only when needed)
 
 ### Critical Implementation Details
 

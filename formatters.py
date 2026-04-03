@@ -26,7 +26,7 @@ class DataFormatter:
         Convert PR data to CSV format.
 
         CSV format will have columns:
-        prIdentifier, orgName, repoName, prId, creator, mergedBy, createdAt, mergedAt, reviewers
+        prIdentifier, orgName, repoName, prId, creator, mergedBy, createdAt, mergedAt
         """
         if not data:
             return ""
@@ -40,8 +40,7 @@ class DataFormatter:
             'creator',
             'mergedBy',
             'createdAt',
-            'mergedAt',
-            'reviewers'
+            'mergedAt'
         ]
 
         writer = csv.DictWriter(output, fieldnames=fieldnames)
@@ -61,8 +60,7 @@ class DataFormatter:
                 'creator': pr_data['creator'],
                 'mergedBy': pr_data['mergedBy'],
                 'createdAt': pr_data['createdAt'],
-                'mergedAt': pr_data['mergedAt'],
-                'reviewers': ', '.join(pr_data['reviewers'])  # Join reviewers as comma-separated string
+                'mergedAt': pr_data['mergedAt']
             }
             writer.writerow(row)
 
